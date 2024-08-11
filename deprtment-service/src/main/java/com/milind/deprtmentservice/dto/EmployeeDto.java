@@ -1,11 +1,9 @@
-package com.milind.employeeservice.dto;
+package com.milind.deprtmentservice.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-
-import java.util.Date;
 
 @Data
 @AllArgsConstructor
@@ -17,5 +15,4 @@ public class EmployeeDto {
     String firstName;
     String lastName;
     String designation;
-    DepartmentDto departmentDetails;
 }

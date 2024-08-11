@@ -1,6 +1,7 @@
 package com.milind.deprtmentservice.controller;
 
 import com.milind.deprtmentservice.dto.DepartmentDto;
+import com.milind.deprtmentservice.dto.DepartmentDtoWithEmployees;
 import com.milind.deprtmentservice.entity.Department;
 import com.milind.deprtmentservice.service.DepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,11 @@ public class DepartmentController {
         return ResponseEntity.ok().body(departmentService.getDepartment(id));
     }
 
+    @RequestMapping("/departmentInfoAndEmployee/{id}")
+    public ResponseEntity<DepartmentDtoWithEmployees> getDepartmentAndEmployeeDetails(@PathVariable Long id){
+        return ResponseEntity.ok().body(departmentService.getDepartmentAndEmployees(id));
+    }
+
     @PostMapping("/createDepartment")
     public ResponseEntity<DepartmentDto> getDepartment(@RequestBody Department department){
         DepartmentDto departmentDto = departmentService.saveDepartment(department);
@@ -30,7 +36,7 @@ public class DepartmentController {
     @PutMapping("/changeDepartmentInfo/{id}")
     public ResponseEntity<DepartmentDto> changeDepartmentInfo(@PathVariable Long id,@RequestBody Department department){
         DepartmentDto departmentDto = departmentService.changeDepartment(id,department);
-        return ResponseEntity.status(HttpStatus.CREATED).body(departmentDto);
+        return ResponseEntity.status(HttpStatus.OK).body(departmentDto);
     }
 
     @DeleteMapping("/deleteDepartmentInfo/{id}")

@@ -5,17 +5,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import java.util.Date;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
-public class EmployeeDto {
-
-    Long empId;
-    String firstName;
-    String lastName;
-    String designation;
-    DepartmentDto departmentDetails;
+public class DepartmentDto {
+    Long id;
+    String departmentName;
+    String departmentCode;
+    Long departmentHeadId;
 }

@@ -1,11 +1,18 @@
 package com.milind.deprtmentservice.service;
 
+import com.milind.deprtmentservice.config.CustomFeignClient;
 import com.milind.deprtmentservice.dto.DepartmentDto;
+import com.milind.deprtmentservice.dto.DepartmentDtoWithEmployees;
+import com.milind.deprtmentservice.dto.EmployeeDto;
 import com.milind.deprtmentservice.entity.Department;
 import com.milind.deprtmentservice.repository.DepartmentRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+
+import java.util.List;
 
 @Service
 public class DepartmentServiceImpl implements DepartmentService{
@@ -15,6 +22,10 @@ public class DepartmentServiceImpl implements DepartmentService{
 
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private WebClient webClient;
+    @Autowired
+    private CustomFeignClient customFeignClient;
 
     @Override
     public DepartmentDto saveDepartment(Department department) {
@@ -23,7 +34,20 @@ public class DepartmentServiceImpl implements DepartmentService{
 
     @Override
     public DepartmentDto getDepartment(Long id) {
-        return modelMapper.map(departmentRepository.findById(id).get(),DepartmentDto.class);
+        return modelMapper.map(departmentRepository.findById(id).orElseThrow(() -> new RuntimeException("Invalid Department Id")),DepartmentDto.class);
+    }
+
+    @Override
+    public DepartmentDtoWithEmployees getDepartmentAndEmployees(Long id) {
+        DepartmentDto departmentDto = modelMapper.map(departmentRepository.findById(id).orElseThrow(
+                () -> new RuntimeException("Invalid Department Id")), DepartmentDto.class);
+        List<EmployeeDto> employeeDtoList = webClient.get().uri("/employees/getAllEmployee/{id}", id).retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<EmployeeDto>>() {
+                }).block();
+        DepartmentDtoWithEmployees departmentDtoWithEmployees = new DepartmentDtoWithEmployees();
+        departmentDtoWithEmployees.setDepartmentDto(departmentDto);
+        departmentDtoWithEmployees.setEmployees(employeeDtoList);
+        return departmentDtoWithEmployees;
     }
 
     @Override
@@ -33,9 +57,11 @@ public class DepartmentServiceImpl implements DepartmentService{
 
     @Override
     public DepartmentDto changeDepartment(Long id, Department department) {
-        Department department1 = departmentRepository.findById(id).get();
-        department1.setDepartmentName(department.getDepartmentName());
-        department1.setDepartmentCode(department.getDepartmentCode());
+        System.out.println(department);
+        Department department1 = departmentRepository.findById(id).orElseThrow(() -> new RuntimeException("department not found"));
+        List<EmployeeDto> employeeDtoList = customFeignClient.getEmployeesData(id);
+        System.out.println("feign client fetch : "+employeeDtoList);
+        modelMapper.map(department,department1);
         departmentRepository.save(department1);
         return modelMapper.map(department1,DepartmentDto.class);
     }

@@ -34,6 +34,8 @@ public class Employee {
     int salary;
     @NotEmpty
     String designation;
+    Long deptId;
+    boolean passwordChanged;
 
 
 }
