@@ -14,7 +14,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/employees")
-
 public class EmployeeController {
 
     @Autowired
@@ -47,7 +46,7 @@ public class EmployeeController {
     }
 
     @DeleteMapping("deleteEmployee/{id}")
-    public ResponseEntity<Void> deleteEmployee(Long id){
+    public ResponseEntity<Void> deleteEmployee(@PathVariable Long id){
         employeeService.deleteEmployee(id);
         return ResponseEntity.noContent().build();
     }
